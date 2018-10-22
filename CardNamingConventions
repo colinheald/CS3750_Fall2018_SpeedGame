@@ -1,0 +1,4 @@
+I have a simple switch case script which will convert the cards from number outputs to the respective images
+basically
+int num // not 0 based, begins at 1, which is Ace, and so on up to 13
+int suit // 0 based, 0 is Diamonds, 1 is Hearts, 2 is Spades, 3 is Clubs
