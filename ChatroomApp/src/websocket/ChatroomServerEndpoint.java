@@ -1,4 +1,5 @@
 package websocket;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;

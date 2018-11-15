@@ -1,42 +1,64 @@
 package resources;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonWriter;
+
+import java.io.*;
+import java.util.*;
+import javax.json.*;
 import javax.websocket.server.ServerEndpoint;
+import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
 @ServerEndpoint("/SpeedGame")
-
 public class Server {
-	static Set<Session> users = Collections.synchronizedSet(new HashSet<Session>());	
+	static Set<Session> users = Collections.synchronizedSet(new HashSet<Session>());
+	GameManager g;
+	
+	private String buildJsonData(String username, String message) {
+		//System.out.println("username: " + username + "\nmessage: " + message);
+		JsonObject object = Json.createObjectBuilder().add("message", message).add("username", username).build();
+		JsonWriter writer = Json.createWriter(object);
+		//return "h";//object.toString();
+		StringWriter stringWriter = new StringWriter();
+		try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {jsonWriter.write(object);}
+		return stringWriter.toString();
+		//return "h";
+	}
 	
 	@OnOpen
-	public void handleOpen(Session userSession) {
+	public void onOpen(Session userSession) {
 		users.add(userSession);
+		//g = new GameManager();
+		
+		System.out.println("handleOpen Called");
+		System.out.println(userSession);
 		//two users max
 	}
 	
 	@OnMessage
-	public void handleMessage(String message, Session userSession) throws IOException {
+	public void onMessage(String message, Session userSession) throws IOException {
 		String username = (String) userSession.getUserProperties().get("username");
-		/*if (username == null) {
+		
+		
+		System.out.println("handleMessage Called");
+		
+		//System.out.println(buildJsonData("username", message));
+		
+		if (username == null) {
 			userSession.getUserProperties().put("username", message);
-			userSession.getBasicRemote().sendText(buildJsonData("System", "You are now connected as " + message));
+			System.out.println("onMessage username: " + username);
+			userSession.getBasicRemote().sendText(message);
+			//userSession.getBasicRemote().sendText(Json.createObjectBuilder().add("username", message).build().toString());
 		}
 		else {
-			
-		}*/
-		Iterator<Session> iterator = users.iterator();
-		while (iterator.hasNext()) iterator.next().getBasicRemote().sendText(buildJsonData());
+			/*Iterator<Session> iterator = users.iterator();
+			while (iterator.hasNext()) {
+				iterator.next().getBasicRemote()
+				.sendText(Json.createObjectBuilder().add(username, message).build().toString());
+			}*/
+		}
 	}
 	
 	@OnClose
@@ -44,10 +66,9 @@ public class Server {
 		users.remove(userSession);
 	}
 	
-	private String buildJsonData(String username, String message) {
-		JsonObject jsonObject = Json.createObjectBuilder().add("message", username+": " + message).build();
-		StringWriter stringWriter = new StringWriter();
-		try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {jsonWriter.write(jsonObject);}
-		return stringWriter.toString();
+	@OnError
+	public void onError(Throwable e){
+		System.out.println("Error thrown");
+		e.printStackTrace();
 	}
 }
