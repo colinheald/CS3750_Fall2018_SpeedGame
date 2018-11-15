@@ -91,28 +91,7 @@ public class Deck {
     }
 
     public String GameState(){
-        JsonObjectBuilder jsonObject = Json.createObjectBuilder();
-
-        jsonObject.add("Pile0",playPiles.get(0).peek().getImage());
-        jsonObject.add("Pile1",playPiles.get(1).peek().getImage());
-        jsonObject.add("Pile2",playPiles.get(2).peek().getImage());
-        jsonObject.add("Pile3",playPiles.get(3).peek().getImage());
-        jsonObject.add("P1Deck",PileHasCards(0));
-        jsonObject.add("P2Deck",PileHasCards(1));
-        jsonObject.add("P1Hand0",playerHands.get(0).get(0).getImage());
-        jsonObject.add("P1Hand1",playerHands.get(0).get(1).getImage());
-        jsonObject.add("P1Hand2",playerHands.get(0).get(2).getImage());
-        jsonObject.add("P1Hand3",playerHands.get(0).get(3).getImage());
-        jsonObject.add("P1Hand4",playerHands.get(0).get(4).getImage());
-        jsonObject.add("P2Hand0",playerHands.get(1).get(0).getImage());
-        jsonObject.add("P2Hand1",playerHands.get(1).get(1).getImage());
-        jsonObject.add("P2Hand2",playerHands.get(1).get(2).getImage());
-        jsonObject.add("P2Hand3",playerHands.get(1).get(3).getImage());
-        jsonObject.add("P2Hand4",playerHands.get(1).get(4).getImage());
-        jsonObject.add("P1Message",player1Message);
-        jsonObject.add("P2Message",player2Message);
-
-        return jsonObject.build().toString();
+        return getGameState();
     }
 
 
@@ -140,10 +119,10 @@ public class Deck {
             int player = inputJson.getInt("Player");
             if(!DrawCard(player)){
                 if(player == 0){
-                    player1Message = "Your Deck is empty";
+                    player1Message = "Your Deck is empty, or your hand is full";
                 }
                 else {
-                    player2Message = "Your Deck is empty";
+                    player2Message = "Your Deck is empty, or your hand is full";
                 }
             }
         }
@@ -151,6 +130,14 @@ public class Deck {
             Stalemate();
         }
 
+        return getGameState();
+
+
+
+
+    }
+
+    private String getGameState(){
         JsonObjectBuilder jsonObject = Json.createObjectBuilder();
 
         jsonObject.add("Pile0",playPiles.get(0).peek().getImage());
@@ -159,24 +146,29 @@ public class Deck {
         jsonObject.add("Pile3",playPiles.get(3).peek().getImage());
         jsonObject.add("P1Deck",PileHasCards(0));
         jsonObject.add("P2Deck",PileHasCards(1));
-        jsonObject.add("P1Hand0",playerHands.get(0).get(0).getImage());
-        jsonObject.add("P1Hand1",playerHands.get(0).get(1).getImage());
-        jsonObject.add("P1Hand2",playerHands.get(0).get(2).getImage());
-        jsonObject.add("P1Hand3",playerHands.get(0).get(3).getImage());
-        jsonObject.add("P1Hand4",playerHands.get(0).get(4).getImage());
-        jsonObject.add("P2Hand0",playerHands.get(1).get(0).getImage());
-        jsonObject.add("P2Hand1",playerHands.get(1).get(1).getImage());
-        jsonObject.add("P2Hand2",playerHands.get(1).get(2).getImage());
-        jsonObject.add("P2Hand3",playerHands.get(1).get(3).getImage());
-        jsonObject.add("P2Hand4",playerHands.get(1).get(4).getImage());
+        int p1Length = playerHands.get(0).size();
+        int p2Length = playerHands.get(1).size();
+        for(int i = 0; i<5; i++){
+            String p1 = "P1Hand" + i;
+            String p2 = "P2Hand" + i;
+            if(i < p1Length){
+                jsonObject.add(p1 ,playerHands.get(0).get(i).getImage());
+            }
+            else{
+                jsonObject.add(p1,"Blank.jpg");
+            }
+            if(i < p2Length){
+                jsonObject.add(p2 ,playerHands.get(1).get(i).getImage());
+            }
+            else{
+                jsonObject.add(p2,"Blank.jpg");
+            }
+        }
+
         jsonObject.add("P1Message",player1Message);
         jsonObject.add("P2Message",player2Message);
 
         return jsonObject.build().toString();
-
-
-
-
     }
 
     /**
@@ -268,6 +260,9 @@ public class Deck {
         boolean success;
         //add logic to prevent too many cards
         if(playerDecks.get(playerIndex).empty()){
+            success = false;
+        }
+        else if(playerDecks.get(playerIndex).size() == 5){
             success = false;
         }
         else{
