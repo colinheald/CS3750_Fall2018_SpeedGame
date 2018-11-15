@@ -1,4 +1,10 @@
 import java.util.*;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import java.io.StringReader;
+
 
 public class Deck {
 
@@ -16,7 +22,8 @@ public class Deck {
     private List<Stack<Card>> playPiles;
     private List<ArrayList<Card>> playerHands;
     private List<Stack<Card>> playerDecks;
-
+    private String player1Message;
+    private String player2Message;
 
     /**
      * Default constructor.  Initializes variables, creates a full 52 card deck.
@@ -38,6 +45,8 @@ public class Deck {
         playPiles = new ArrayList<>();
         playerHands = new ArrayList<>();
         playerDecks = new ArrayList<>();
+        player1Message = "";
+        player2Message = "";
 
         //initialize the play piles
         for(int i = 0; i < 4; i++){
@@ -81,6 +90,94 @@ public class Deck {
         return playerHands.get(playerIndex);
     }
 
+    public String GameState(){
+        JsonObjectBuilder jsonObject = Json.createObjectBuilder();
+
+        jsonObject.add("Pile0",playPiles.get(0).peek().getImage());
+        jsonObject.add("Pile1",playPiles.get(1).peek().getImage());
+        jsonObject.add("Pile2",playPiles.get(2).peek().getImage());
+        jsonObject.add("Pile3",playPiles.get(3).peek().getImage());
+        jsonObject.add("P1Deck",PileHasCards(0));
+        jsonObject.add("P2Deck",PileHasCards(1));
+        jsonObject.add("P1Hand0",playerHands.get(0).get(0).getImage());
+        jsonObject.add("P1Hand1",playerHands.get(0).get(1).getImage());
+        jsonObject.add("P1Hand2",playerHands.get(0).get(2).getImage());
+        jsonObject.add("P1Hand3",playerHands.get(0).get(3).getImage());
+        jsonObject.add("P1Hand4",playerHands.get(0).get(4).getImage());
+        jsonObject.add("P2Hand0",playerHands.get(1).get(0).getImage());
+        jsonObject.add("P2Hand1",playerHands.get(1).get(1).getImage());
+        jsonObject.add("P2Hand2",playerHands.get(1).get(2).getImage());
+        jsonObject.add("P2Hand3",playerHands.get(1).get(3).getImage());
+        jsonObject.add("P2Hand4",playerHands.get(1).get(4).getImage());
+        jsonObject.add("P1Message",player1Message);
+        jsonObject.add("P2Message",player2Message);
+
+        return jsonObject.build().toString();
+    }
+
+
+    public String GameState(String action){
+        player1Message = "";
+        player2Message = "";
+        JsonObject inputJson = jsonFromString(action);
+        String method = inputJson.getString("Method");
+
+        if(method.equals("Play")){
+            int player = inputJson.getInt("Player");
+            int card = inputJson.getInt("Card");
+            int pile = inputJson.getInt("Pile");
+            if(!PlayACard(player, card, pile)){
+                if(player == 0){
+                    player1Message = "That move is not allowed";
+                }
+                else {
+                    player2Message = "That move is not allowed";
+                }
+            }
+
+        }
+        else if(method.equals("Draw")){
+            int player = inputJson.getInt("Player");
+            if(!DrawCard(player)){
+                if(player == 0){
+                    player1Message = "Your Deck is empty";
+                }
+                else {
+                    player2Message = "Your Deck is empty";
+                }
+            }
+        }
+        else if(method.equals("Stalemate") ){
+            Stalemate();
+        }
+
+        JsonObjectBuilder jsonObject = Json.createObjectBuilder();
+
+        jsonObject.add("Pile0",playPiles.get(0).peek().getImage());
+        jsonObject.add("Pile1",playPiles.get(1).peek().getImage());
+        jsonObject.add("Pile2",playPiles.get(2).peek().getImage());
+        jsonObject.add("Pile3",playPiles.get(3).peek().getImage());
+        jsonObject.add("P1Deck",PileHasCards(0));
+        jsonObject.add("P2Deck",PileHasCards(1));
+        jsonObject.add("P1Hand0",playerHands.get(0).get(0).getImage());
+        jsonObject.add("P1Hand1",playerHands.get(0).get(1).getImage());
+        jsonObject.add("P1Hand2",playerHands.get(0).get(2).getImage());
+        jsonObject.add("P1Hand3",playerHands.get(0).get(3).getImage());
+        jsonObject.add("P1Hand4",playerHands.get(0).get(4).getImage());
+        jsonObject.add("P2Hand0",playerHands.get(1).get(0).getImage());
+        jsonObject.add("P2Hand1",playerHands.get(1).get(1).getImage());
+        jsonObject.add("P2Hand2",playerHands.get(1).get(2).getImage());
+        jsonObject.add("P2Hand3",playerHands.get(1).get(3).getImage());
+        jsonObject.add("P2Hand4",playerHands.get(1).get(4).getImage());
+        jsonObject.add("P1Message",player1Message);
+        jsonObject.add("P2Message",player2Message);
+
+        return jsonObject.build().toString();
+
+
+
+
+    }
 
     /**
      * Method to execute when the game is in stalemate.  Accepts no parameters.  If
@@ -169,6 +266,7 @@ public class Deck {
      */
     public boolean DrawCard(int playerIndex){
         boolean success;
+        //add logic to prevent too many cards
         if(playerDecks.get(playerIndex).empty()){
             success = false;
         }
@@ -177,6 +275,15 @@ public class Deck {
             success = true;
         }
         return success;
+    }
+
+    /**
+     * Method to determine solely if a player's draw pile is empty
+     * @param playerIndex index number for the player (0 or 1)
+     * @return false if the pile is empty.
+     */
+    public boolean PileHasCards(int playerIndex){
+        return !playerDecks.get(playerIndex).empty();
     }
 
     private void DealCards(){
@@ -227,5 +334,14 @@ public class Deck {
         Collections.shuffle(cards, new Random(seed));
         seed = System.nanoTime();
         Collections.shuffle(cards, new Random(seed));
+    }
+
+    private JsonObject jsonFromString(String jsonObjectStr) {
+
+        JsonReader jsonReader = Json.createReader(new StringReader(jsonObjectStr));
+        JsonObject object = jsonReader.readObject();
+        jsonReader.close();
+
+        return object;
     }
 }

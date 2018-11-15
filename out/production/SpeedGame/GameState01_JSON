@@ -1,0 +1,20 @@
+{
+  "Pile0" : "2H.jpg",
+  "Pile1" : "7C.jpg",
+  "Pile2" : "AS.jpg",
+  "Pile3" : "4D.jpg",
+  "P1Deck" : true,
+  "P2Deck" : false,
+  "P1Hand0" : "5D.jpg",
+  "P1Hand1" : "9H.jpg",
+  "P1Hand2" : "10S.jpg",
+  "P1Hand3" : "AD.jpg",
+  "P1Hand4" : "6H.jpg",
+  "P2Hand0" : "QS.jpg",
+  "P2Hand1" : "QD.jpg",
+  "P2Hand2" : "7C.jpg",
+  "P2Hand3" : "KH.jpg",
+  "P2Hand4" : "JD.jpg",
+  "P1Message" : "test message",
+  "P2Message" : "test message 2"
+}
