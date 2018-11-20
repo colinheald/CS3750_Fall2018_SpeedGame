@@ -1,21 +1,31 @@
 package resources;
 
+import java.io.StringReader;
 import java.util.*;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 
 public class GameManager {
 	
 	public Deck d;
 	public ArrayList<Card> p1;
 	public ArrayList<Card> p2;
+	public String json;
+	public JsonObject jsonObj;
 	
 	public GameManager()
 	{
 		d = new Deck();
+		//json = d.GameState();
+		//jsonObj = this.jsonFromString(json);
 	}
 	
 	public boolean getDeck(int pIndex)
 	{
-		return d.canDeckDraw(pIndex);
+		//return d.canDeckDraw(pIndex);
+		return false;
 	}
 	
 	public String[] getPiles()
@@ -24,11 +34,27 @@ public class GameManager {
 		
 		for (int i = 0; i < d.GetTopCards().size(); ++i)
 		{
-			s[i] = getImg(d.GetTopCards().get(i), i, "Pile");
+			//s[i] = getImg(d.GetTopCards().get(i), i, "Pile");
+			s[i] = getImg(jsonObj.getString("P1Hand" + i), "Pile", i);
 		}
 		
 		return s;
+		/*s[0] = getImg(jsonObj.getString("Pile0"), "Pile" ,0);
+		s[1] = getImg(jsonObj.getString("Pile1"), "Pile" ,1);
+		s[2] = getImg(jsonObj.getString("Pile2"), "Pile" ,2);
+		s[3] = getImg(jsonObj.getString("Pile3"), "Pile" ,3);
+		
+		return s;*/
 	}
+	
+	private JsonObject jsonFromString(String jsonObjectStr) {
+
+        JsonReader jsonReader = Json.createReader(new StringReader(jsonObjectStr));
+        JsonObject object = jsonReader.readObject();
+        jsonReader.close();
+
+        return object;
+    }
 	
 	public String[] getPlayerHand(int pIndex)
 	{
@@ -36,33 +62,20 @@ public class GameManager {
 		
 		for (int i = 0; i < d.getPlayerHand(pIndex).size() ; ++i)
 		{
-			s[i] = getImg(d.getPlayerHand(pIndex).get(i), i, "pHand");
+			s[i] = getImg(jsonObj.getString("Pile" + i), "pHand", i);
 		}
 		
 		return s;
 	}
 	
-	public String getImg(Card c, int index, String suffix)
-	{
-		String s = "";
-		
-		if(c.getValue() < 11)
-		{
-			s += c.getValue();
-		}
-		else
-		{
-			s += c.getName().substring(0, 1);
-		}
-		
-		s += c.getSuit().substring(0, 1);
-		
+	public String getImg(String filename, String suffix, int index)
+	{		
 		String drag = "draggable='true' ondragstart='drag(event)'";
 		
 		if(suffix.equalsIgnoreCase("Pile")) {
 			drag = "draggable='false' ondrop='drop(event)' ondragover='allowDrop(event)'";
 		}
-		return "<img id='" + index + "_" + suffix +"' src='images/" + s + ".jpg' height='10%' width='10%' " + drag + ">";
+		return "<img id='" + index + "_" + suffix +".jpg' src='images/"  + filename + "' height='10%' width='10%' " + drag + ">";		
 	}
 	
 	public boolean isStalemate()
@@ -107,14 +120,4 @@ public class GameManager {
 	{
 		
 	}
-	
-	public String[] readJSON()
-	{
-		String[] s = {""};
-		
-		
-		
-		return s;
-	}
-
 }

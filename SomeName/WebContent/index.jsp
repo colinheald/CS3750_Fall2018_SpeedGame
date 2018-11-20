@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" 
 	pageEncoding="ISO-8859-1" %>
-<%@ page import="java.util.*, java.lang.*, java.io.*, resources.*, org.json.*" %>
+<%@ page import="java.util.*, java.lang.*, java.io.*, resources.*, javax.json.*" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,43 +17,20 @@
 
 	<!-- Play piles -->
 	<div id="piles">
-		<%
-			out.println(DeckBack);
-		%>
-		<%
-			String[] playPiles = g.getPiles();
 		
-			for (int i = 0; i < playPiles.length; ++i)
-			{
-				out.println(playPiles[i]);
-			}
-		%>
-		<%
-			out.println(DeckBack);
-		%>
 	</div>
 	
 	<!-- Your hand and deck -->
 	<div id="player">
-		<%
-			if(g.getDeck(0))
-			{
-				out.println(DeckBack);
-			}
-		%>
-		<%
-			String[] p1Hand = g.getPlayerHand(0);
-			
-			for(int i = 0; i < p1Hand.length; ++i)
-			{
-				out.println(p1Hand[i]);
-			}
-		%>
+		
 	</div>
 	
 	<div>
-		<h1 id="test">
-			Drop Here
+		<h1 id="p2message">
+			p1Message
+		</h1>
+		<h1 id="p1message">
+			p2Message
 		</h1>
 	</div>
 	
@@ -78,6 +55,7 @@
 		}
 		
 		websocket.onmessage = function processMessage(message){
+			echoarea.value += message.data + "\n";
 			var jsonData = JSON.parse(message.data);
 			if(jsonData.message != null) echoarea.value += jsonData.message + "\n";
 		}

@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" build-on-make="true" name="newGame+:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/newGame__war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="newGame+/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="newGame+" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="javax.websocket:javax.websocket-api:1.1" />
+          <element id="library" level="project" name="javax.json:javax.json-api:1.1.4" />
+          <element id="library" level="project" name="org.glassfish:javax.json:1.1.4" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

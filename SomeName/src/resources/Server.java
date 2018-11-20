@@ -18,13 +18,13 @@ public class Server {
 	
 	private String buildJsonData(String username, String message) {
 		//System.out.println("username: " + username + "\nmessage: " + message);
-		JsonObject object = Json.createObjectBuilder().add("message", message).add("username", username).build();
+		/*JsonObject object = Json.createObjectBuilder().add("message", message).add("username", username).build();
 		JsonWriter writer = Json.createWriter(object);
 		//return "h";//object.toString();
 		StringWriter stringWriter = new StringWriter();
 		try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {jsonWriter.write(object);}
-		return stringWriter.toString();
-		//return "h";
+		return stringWriter.toString();*/
+		return "h";
 	}
 	
 	@OnOpen
@@ -48,16 +48,17 @@ public class Server {
 		
 		if (username == null) {
 			userSession.getUserProperties().put("username", message);
+			username = (String) userSession.getUserProperties().get("username");
 			System.out.println("onMessage username: " + username);
-			userSession.getBasicRemote().sendText(message);
-			//userSession.getBasicRemote().sendText(Json.createObjectBuilder().add("username", message).build().toString());
+			//userSession.getBasicRemote().sendText(username + ": " + message);
+			userSession.getBasicRemote().sendText(Json.createObjectBuilder().add("username", message).build().toString());
 		}
 		else {
-			/*Iterator<Session> iterator = users.iterator();
+			Iterator<Session> iterator = users.iterator();
 			while (iterator.hasNext()) {
 				iterator.next().getBasicRemote()
-				.sendText(Json.createObjectBuilder().add(username, message).build().toString());
-			}*/
+				.sendText(username + ": " + message);//Json.createObjectBuilder().add(username, message).build().toString());
+			}
 		}
 	}
 	

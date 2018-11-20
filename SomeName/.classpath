@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="C:/Tyler/Fall 2018/CS 3750/CS3750_Fall2018_SpeedGame/SomeName/javax.json-1.0.jar"/>
 	<classpathentry kind="lib" path="C:/Tyler/Fall 2018/CS 3750/CS3750_Fall2018_SpeedGame/SomeName/javax.servlet.jar"/>
 	<classpathentry kind="lib" path="C:/Tyler/Fall 2018/CS 3750/CS3750_Fall2018_SpeedGame/SomeName/javax.websocket-api-1.0-rc4.jar"/>
+	<classpathentry kind="lib" path="javax.json-api-1.1.4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
