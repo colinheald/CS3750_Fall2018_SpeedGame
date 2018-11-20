@@ -24,6 +24,7 @@ public class GameManager {
 	{
 		return jsonObj;
 	}
+	public JsonObject getGameState(String s) { json = d.GameState(s); jsonObj = this.jsonFromString(json); return jsonObj;}
 	
 	/*public boolean getDeck(int pIndex)
 	{

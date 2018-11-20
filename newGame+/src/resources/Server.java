@@ -17,53 +17,39 @@ public class Server {
 	static Set<Session> users = Collections.synchronizedSet(new HashSet<Session>());
 	int userId;
 	GameManager game;
+	Deck d;
 	JsonObject state;
 	
-	private String buildJsonData(String username, String message) {
-		/*JsonObject object = Json.createObjectBuilder().add("message", message).add("username", username).build();
-		JsonWriter writer = Json.createWriter(object);
-		StringWriter stringWriter = new StringWriter();
-		try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {jsonWriter.write(object);}
-		return stringWriter.toString();*/
-		return "h";
-        //Json.createObjectBuilder().add("Pile0": )
-	}
-	
 	@OnOpen
-	public void onOpen(Session userSession) {
+	public void onOpen(Session userSession) throws IOException {
         if(users.size() > 2)
         {
             return;
         }
+        d = new Deck();
         users.add(userSession);
-        //userId = (int) userSession.getUserProperties().get("ID");
         userId = users.size() -1;
 		game = new GameManager();
 		state = game.getGameState();
-		state = Json.createObjectBuilder().add("userId", userId).build();
+		//state = Json.createObjectBuilder().add("userId", userId).build();
         //userSession.getUserProperties().put("Pile0", "2H.jpg");
-		//userSession.getBasicRemote().sendText(state.toString());
+		userSession.getBasicRemote().sendText(d.GameState());
 		//two users max
+
 	}
 	
 	@OnMessage
 	public void onMessage(String message, Session userSession) throws IOException {
-
-		String username = (String) userSession.getUserProperties().get("username");
-		
-		if (username == null) {
-			userSession.getUserProperties().put("username", message);
-			username = (String) userSession.getUserProperties().get("username");
-			userSession.getBasicRemote().sendText(username + ": " + message);
-			//userSession.getBasicRemote().sendText(message);
-			//userSession.getBasicRemote().sendText(Json.createObjectBuilder().add("username", message).toString());
+		//state = game.getGameState(message);
+		String s = d.GameState(message);
+		Iterator<Session> iterator = users.iterator();
+		while (iterator.hasNext()) {
+			//Session reciever = iterator.next();
+			//reciever.getBasicRemote().sendText(message);
+			iterator.next().getBasicRemote().sendText(s);
+			//iterator.next().getBasicRemote().sendText(state.toString());
 		}
-		else {
-			Iterator<Session> iterator = users.iterator();
-			while (iterator.hasNext()) {
-				iterator.next().getBasicRemote().sendText(username + ": UserId is " + userId);
-			}
-		}
+		//userSession.getBasicRemote().sendText(s);
 	}
 	
 	@OnClose
